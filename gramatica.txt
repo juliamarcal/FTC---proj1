@@ -1,5 +1,7 @@
 A,aBc,#
-B,b
+B,abC,bA
+C,DC,c,#
+D,#
 ----
 abc
 #
