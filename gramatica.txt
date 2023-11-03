@@ -1,0 +1,6 @@
+A,aBc,#
+B,b
+----
+abc
+#
+aaaaaaaa
