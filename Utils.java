@@ -1,6 +1,7 @@
 import java.util.List;
 
 public class Utils {
+    static Utils utils = new Utils();
 
     public int getRuleIndex(String value, List<List<String>> elements) {
         int index = 0;
@@ -15,6 +16,18 @@ public class Utils {
 
     public boolean isUpperCase(String str) {
         return str.equals(str.toUpperCase());
+    }
+
+    public void printMatrix(String[][] matrix) {
+        int rows = matrix.length;
+        int columns = matrix[0].length;
+    
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                System.out.print(matrix[i][j] + "\t");
+            }
+            System.out.println();
+        }
     }
 
 }

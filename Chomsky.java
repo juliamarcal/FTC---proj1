@@ -1,37 +1,53 @@
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.rmi.CORBA.Util;
-
-public class Forms {
+public class Chomsky {
     static Utils utils = new Utils();
 
     public List<List<String>> ToFNC(List<List<String>> elements) {
-        System.out.println(elements);
+        System.out.println("======= Passo a passo - Gramática de Chomsky =======\n");
+        System.out.println("Gramática original: " + elements);
+        List<List<String>> newElements = new ArrayList<>();
 
-        elements = eliminateVoid(elements);
-        System.out.println(elements);
+        newElements = eliminateVoid(elements);
+        System.out.println("Elimina lambda: " + newElements);
 
-        elements = eliminateUnitaryProductions(elements);
-        System.out.println(elements);
+        newElements = eliminateUnitaryProductions(newElements);
+        System.out.println("Substitui variáveis: " + newElements);
         
-        elements = doChomsky(elements);
-        System.out.println(elements);
+        newElements = doChomsky(newElements);
+        System.out.println("Alteração para forma normal: " + newElements);
 
+        if (acceptVoid(elements)) {
+           newElements.get(0).add("#"); 
+           System.out.println("Adiciona lambda a primeira regra se a gramatica aceita vazio: " + newElements);
+        }
 
-
-        return elements;
+        return newElements;
     }
 
-    public List<List<String>> To2NF(List<List<String>> elements) {
+    public boolean acceptVoid(List<List<String>> grammar) {
+        String lambda = "#";
 
-        return null;
+        for(int i=1; i< grammar.get(0).size(); i++) { // go trough all rules in element
+            if (grammar.get(0).get(i).equals(lambda)) { // first rule contains lambda
+                return true;
+
+            } else if (grammar.get(0).get(i).length() == 1 && utils.isUpperCase(grammar.get(0).get(i))) { // first rule contains unitary element that contains lambda
+                List<String> unitaryEl = grammar.get(utils.getRuleIndex(grammar.get(0).get(i), grammar));
+                
+                for(int j=1; j<unitaryEl.size(); j++) { // go trough unitaryEl to see if finds lambda
+                    if (unitaryEl.get(j).equals(lambda)) { // first rule contains lambda
+                        return true; 
+                    }
+                }
+            }
+
+        }
+
+        return false;
     }
 
     public List<List<String>> eliminateVoid(List<List<String>> elements) {
@@ -54,28 +70,26 @@ public class Forms {
         }
         List<List<String>> newElements = new ArrayList<>();
 
-        for (List<String> rule : elements) {
+        for (List<String> rule : elements) {// for all the rules in elements
             List<String> newRule = new ArrayList<>();
-            for(String symbol : rule) {
-                for(String verifica : rulesWithLambda){
-                    newRule.add(symbol);
+            for(String symbol : rule) { // go trough all symbles
+                newRule.add(symbol);
+
+                for(String verifica : rulesWithLambda){ // foreach element that has lambda
                     String replaced = symbol.replaceAll(verifica, "");
                     if (!replaced.equals(symbol)  && !replaced.equals("") ) {
                         newRule.add(replaced);
                     }
                 }
-                if (symbol.equals(lambda)){
+
+                if (symbol.equals(lambda)){ // if has lambda removes
                     newRule.remove(lambda); 
                 }
             }
             newElements.add(newRule);
             
         }
-        elements.clear();
-        elements.addAll(newElements);
-
-
-        return elements;
+        return newElements;
     }
 
 
@@ -127,6 +141,7 @@ public class Forms {
         }
         int countNewVars = 1;
         String newValue = "";
+        int subStringEndPoint = 2;
         Map<Character, String> checkedElements = new HashMap<>();
         
         for (List<String> rule : newElements) {
@@ -150,13 +165,51 @@ public class Forms {
                     }
                 }
             }
-
         }
 
         for (Map.Entry<Character, String> entry : checkedElements.entrySet()) {
             List<String> newRule = new ArrayList<>();
             newRule.add(entry.getValue());
             newRule.add(String.valueOf(entry.getKey()));
+            newElements.add(newRule);
+        }
+
+        // take out var followed by 2 or more var's
+        Map<String, String> checkedElementsDoubleVar = new HashMap<>();
+        for (List<String> rule : newElements) {
+            for(int i=1; i<rule.size();i++) {
+                String symble = rule.get(i);
+                subStringEndPoint = 2;
+  
+                if (symble.length() >= 3) {
+                    for(int j=0; j<subStringEndPoint; j++) {
+                        if (symble.charAt(j) == 'X') {
+                            subStringEndPoint++;
+                        }
+                    }
+                    if (symble.length() == subStringEndPoint) {
+                        break;
+                    }
+                    String substring = symble.substring(0, subStringEndPoint);
+                    
+                    if (checkedElementsDoubleVar.containsKey(substring)) {
+                        newValue = rule.get(i).replaceAll(substring, checkedElementsDoubleVar.get(substring));
+                        rule.set(i, newValue);
+                    } else {
+                        checkedElementsDoubleVar.put(substring, "X"+countNewVars);
+                        countNewVars++;
+                        newValue = rule.get(i).replaceAll(substring, checkedElementsDoubleVar.get(substring));
+                        rule.set(i, newValue);
+                    }
+                                
+                }
+            }
+        }
+
+        for (Map.Entry<String, String> entry : checkedElementsDoubleVar.entrySet()) {
+            List<String> newRule = new ArrayList<>();
+            newRule.add(entry.getValue());
+            newRule.add(entry.getKey());
             newElements.add(newRule);
         }
         

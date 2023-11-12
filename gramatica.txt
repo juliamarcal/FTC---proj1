@@ -1,15 +1,6 @@
-L,aSc
+L,a,S,#
 S,SE,#
-E,b,L
+E,b,c
 ----
 abc
 #
-aaaaaaaa
-
-
-L,AX,AB
-S,SE,b,AX,AB
-E,b,AX,AB
-X,SB
-A,a
-B,c

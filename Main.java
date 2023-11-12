@@ -1,22 +1,31 @@
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     static Archive archive = new Archive();
-    static Forms forms = new Forms();
+    static Chomsky chomsky = new Chomsky();
+    static CYK cyk = new CYK();
+
 
     public static void main(String[] args) {
         // Declarações de variáveis
-        List<List<String>> elements;
+        List<List<String>> originalElements;
         List<String> sentences;
         
         // Lê o arquivo e salva a gramatica
-        elements = archive.FindGlcInArquive();
+        originalElements = archive.FindGlcInArquive();
         sentences = archive.FindSentenceInArquive();
-        List<List<String>> lambda = forms.ToFNC(elements);
-        System.out.println("elements: " + elements);
-        System.out.println("sentence: " + sentences);
-        System.out.println("lambda: " + lambda);
+        List<List<String>> gramatica = chomsky.ToFNC(originalElements);
+
+        System.out.println("\n\n======= Resultados Finais =======\n");
+        System.out.println("Gramática: " + originalElements);
+        System.out.println("Sentenças à validar: " + sentences);
+        System.out.println("Gramática de Chomsky: " + gramatica);
+
+
+        for (String sentence : sentences) {
+            boolean validation = cyk.cykParse(gramatica, sentence);
+            System.out.println("Validação CYK: " + validation);
+        }
         
     }
 }
