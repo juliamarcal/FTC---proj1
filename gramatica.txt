@@ -1,6 +1,6 @@
-L,a,S,#
+L,aSc
 S,SE,#
-E,b,c
+E,b,L
 ----
 abc
-#
+abbc

@@ -2,69 +2,74 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CYK {
-    static Utils utils = new Utils();
+    private List<List<String>> regras;
 
-    public boolean cykParse(List<List<String>> grammar, String word) {
-        int wordLen = word.length();
-        int grammarLen = grammar.size();
-
-        if (word.equals("#")) {
-            return (grammar.get(0).contains("#"));
-        }
-
-        // Inicializa a tabela CYK
-        String[][] table = new String[wordLen][wordLen];
-
-        // fill main diagonal
-        for(int i=0; i<wordLen; i++) { 
-            for (List<String> variable : grammar) {
-                if (table[i][i] == null) {
-                    table[i][i] = "";
-                }
-                if (variable.contains(String.valueOf(word.charAt(i)))) {
-                    if (table[i][i].length() > 0) {
-                        table[i][i] += ",";
-                    }
-                    table[i][i] += variable.get(0);
-                }
-            }
-        }
-        utils.printMatrix(table);
-
-        //fill the rest of the table
-        /* 
-
-        w -> word
-        n -> length of w
-        G -> grammar
-        S -> start state of grammar
-
-            For l = 2 to n:
-                For i = 1 to n-l+1:
-                    j = i+l-1
-                        For k = i to j-1:
-                        For each rule A -> BC: 
-                        We check if (i, k) cell contains B and (k + 1, j) cell contains C:
-                            If so, we put A in cell (i, j) of our table.
-        */
-
-
-        // check if table[0][wordLen-1] is filled
-        return (table[0][wordLen-1] != null);
+    public CYK(List<List<String>> regras) {
+        this.regras = regras;
     }
 
-    public List<String> doCombinations(String group1, String group2) {
-        List<String> combinations = new ArrayList<>();
+    public boolean cykParse(List<List<String>> regras, String palavra) {
+        int tamanho = palavra.length();
+        List<String>[][] matrizDeRegras = new ArrayList[tamanho][tamanho];
 
-        String[] elements1 = group1.split(",");
-        String[] elements2 = group2.split(",");
+        for (int j = 0; j < tamanho; j++) {
+            matrizDeRegras[0][j] = keysOfValue(String.valueOf(palavra.charAt(j)));
+        }
 
-        for (String elem1 : elements1) {
-            for (String elem2 : elements2) {
-                combinations.add(elem1 + elem2);
+        for (int i = 1; i < tamanho; i++) {
+            for (int j = 0; j < (tamanho - i); j++) {
+                List<String> conjuntoRegras = new ArrayList<String>();
+                int linhaAtual = i, colunaAtual = j;
+
+                for (int k = 0; k < i; k++) {
+                    List<String> regraEsquerda = matrizDeRegras[k][j];
+                    linhaAtual--;
+                    colunaAtual++;
+                    List<String> regraDireita = matrizDeRegras[linhaAtual][colunaAtual];
+
+                    insereCasoNaoExista(concatenaVerificaRegras(regraEsquerda, regraDireita), conjuntoRegras);
+                }
+
+                matrizDeRegras[i][j] = conjuntoRegras;
             }
         }
 
-        return combinations;
+        return matrizDeRegras[tamanho - 1][0].contains("L");
+    }
+
+    private List<String> concatenaVerificaRegras(List<String> regraEsquerda, List<String> regraDireita) {
+        List<String> regrasExistentes = new ArrayList<String>();
+
+        if (!regraEsquerda.isEmpty() && !regraDireita.isEmpty()) {
+            for (String regraEsq : regraEsquerda) {
+                for (String regraDir : regraDireita) {
+                    String regraFormada = regraEsq + regraDir;
+                    List<String> aux = keysOfValue(regraFormada);
+                    insereCasoNaoExista(aux, regrasExistentes);
+                }
+            }
+        }
+
+        return regrasExistentes;
+    }
+
+    private List<String> keysOfValue(String value) {
+        List<String> keys = new ArrayList<String>();
+
+        for (List<String> rule : regras) {
+            if (rule.contains(value)) {
+                keys.add(rule.get(0));
+            }
+        }
+
+        return keys;
+    }
+
+    private void insereCasoNaoExista(List<String> aux, List<String> listFinal) {
+        for (String key : aux) {
+            if (!listFinal.contains(key)) {
+                listFinal.add(key);
+            }
+        }
     }
 }
