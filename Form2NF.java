@@ -8,11 +8,15 @@ public class Form2NF {
 
     public List<List<String>> To2NF(List<List<String>> elements) {
         List<List<String>> newElements = new ArrayList<>();
+        
+        System.out.println("======= Passo a passo - 2FN =======\n");
+        System.out.println("Gramática original: " + elements);
 
         newElements = chomsky.eliminateVoid(elements);
         System.out.println("Elimina lambda: " + newElements);
 
         newElements = do2NF(newElements);
+        System.out.println("Alteração para forma normal binária: " + newElements + "\n");
 
         return newElements;
     }

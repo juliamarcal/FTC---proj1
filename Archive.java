@@ -18,8 +18,6 @@ public class Archive {
             String linha = br.readLine();
 
             while (linha != null && !linha.equals("----")) {
-                //System.out.println(linha);
-
                 String[] linhaSplited = linha.split(",");
 
                 elements.add(Arrays.asList(linhaSplited));
@@ -46,8 +44,6 @@ public class Archive {
             String linha = br.readLine();
 
             while (linha != null) {
-                //System.out.println(linha);
-
                 if (linha.equals("----")) {
                     linha = br.readLine();
                     while (linha != null) {

@@ -2,6 +2,7 @@ import java.util.List;
 
 public class Utils {
     static Utils utils = new Utils();
+    static Archive archive = new Archive();
 
     public int getRuleIndex(String value, List<List<String>> elements) {
         int index = 0;
@@ -28,6 +29,13 @@ public class Utils {
             }
             System.out.println();
         }
+    }
+
+    public String getFirstGrammarItem(){
+        List<List<String>> elements;
+        elements = archive.FindGlcInArquive(); 
+        String firstVariable = elements.get(0).get(0);
+        return firstVariable;
     }
 
 }

@@ -18,7 +18,7 @@ public class Chomsky {
         System.out.println("Substitui variáveis: " + newElements);
         
         newElements = doChomsky(newElements);
-        System.out.println("Alteração para forma normal: " + newElements);
+        System.out.println("Alteração para forma normal: " + newElements +"\n");
 
         if (acceptVoid(elements)) {
            newElements.get(0).add("#"); 

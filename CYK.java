@@ -2,39 +2,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CYK {
-    private List<List<String>> regras;
+    private List<List<String>> elements;
+    static Utils utils = new Utils();
 
-    public CYK(List<List<String>> regras) {
-        this.regras = regras;
+    public CYK(List<List<String>> elements) {
+        this.elements = elements;
     }
 
-    public boolean cykParse(List<List<String>> regras, String palavra) {
-        int tamanho = palavra.length();
-        List<String>[][] matrizDeRegras = new ArrayList[tamanho][tamanho];
+    public boolean cykParse(List<List<String>> elements, String sentence) {
+        int sentenceSize = sentence.length();
+        List<String>[][] table = new ArrayList[sentenceSize][sentenceSize];
 
-        for (int j = 0; j < tamanho; j++) {
-            matrizDeRegras[0][j] = keysOfValue(String.valueOf(palavra.charAt(j)));
+        for (int j = 0; j < sentenceSize; j++) {
+            table[0][j] = keysOfValue(String.valueOf(sentence.charAt(j)));
         }
 
-        for (int i = 1; i < tamanho; i++) {
-            for (int j = 0; j < (tamanho - i); j++) {
+        for (int i = 1; i < sentenceSize; i++) {
+            for (int j = 0; j < (sentenceSize - i); j++) {
                 List<String> conjuntoRegras = new ArrayList<String>();
-                int linhaAtual = i, colunaAtual = j;
+                int rows = i, columns = j;
 
                 for (int k = 0; k < i; k++) {
-                    List<String> regraEsquerda = matrizDeRegras[k][j];
-                    linhaAtual--;
-                    colunaAtual++;
-                    List<String> regraDireita = matrizDeRegras[linhaAtual][colunaAtual];
+                    List<String> regraEsquerda = table[k][j];
+                    rows--;
+                    columns++;
+                    List<String> regraDireita = table[rows][columns];
 
                     insereCasoNaoExista(concatenaVerificaRegras(regraEsquerda, regraDireita), conjuntoRegras);
                 }
 
-                matrizDeRegras[i][j] = conjuntoRegras;
+                table[i][j] = conjuntoRegras;
             }
         }
 
-        return matrizDeRegras[tamanho - 1][0].contains("L");
+        return table[sentenceSize - 1][0].contains(utils.getFirstGrammarItem());
     }
 
     private List<String> concatenaVerificaRegras(List<String> regraEsquerda, List<String> regraDireita) {
@@ -56,7 +57,7 @@ public class CYK {
     private List<String> keysOfValue(String value) {
         List<String> keys = new ArrayList<String>();
 
-        for (List<String> rule : regras) {
+        for (List<String> rule : elements) {
             if (rule.contains(value)) {
                 keys.add(rule.get(0));
             }

@@ -16,21 +16,21 @@ public class Main {
         // Lê o arquivo e salva a gramatica
         elements = archive.FindGlcInArquive();
         sentences = archive.FindSentenceInArquive();
-        /* List<List<String>> gramatica = chomsky.ToFNC(elements); */
-        List<List<String>> gramatica = form2nf.To2NF(elements);
+        List<List<String>> gramatica = chomsky.ToFNC(elements); 
+        List<List<String>> gramatica2NF = form2nf.To2NF(elements);
 
         System.out.println("\n\n======= Resultados Finais =======\n");
         System.out.println("Gramática original: " + elements);
         System.out.println("Sentenças a validar: " + sentences);
-        //System.out.println("Gramática de Chomsky: " + gramatica);
-        System.out.println("Gramática 2FN: " + gramatica);
+        System.out.println("Gramática de Chomsky: " + gramatica);
+        System.out.println("Gramática 2FN: " + gramatica2NF);
         
 
-        /* cyk = new CYK(gramatica); // Criando uma instância de CYK com as regras de Chomsky
+        cyk = new CYK(gramatica); // Criando uma instância de CYK com as regras de Chomsky
 
         for (String sentence : sentences) {
             boolean validation = cyk.cykParse(gramatica, sentence);
             System.out.println("Validação CYK para a sentença \"" + sentence + "\": " + validation);
-        } */
+        }
     }
 }
