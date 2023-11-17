@@ -92,7 +92,6 @@ public class Chomsky {
         return newElements;
     }
 
-
     public List<List<String>> eliminateUnitaryProductions(List<List<String>> elements) {
         List<List<String>> newElements = new ArrayList<>();
         for (List<String> innerList : elements) {
@@ -143,7 +142,7 @@ public class Chomsky {
         String newValue = "";
         int subStringEndPoint = 2;
         Map<Character, String> checkedElements = new HashMap<>();
-        
+        // change variables in lowercase to variables Xi
         for (List<String> rule : newElements) {
             for(int i=1; i<rule.size();i++) {
                 String symble = rule.get(i);
@@ -174,7 +173,7 @@ public class Chomsky {
             newElements.add(newRule);
         }
 
-        // take out var followed by 2 or more var's
+        // take out variables followed by 2 or more variables in uppercase to crate new Xi wiht the union of each
         Map<String, String> checkedElementsDoubleVar = new HashMap<>();
         for (List<String> rule : newElements) {
             for(int i=1; i<rule.size();i++) {
