@@ -8,8 +8,10 @@ public class CYK {
     public CYK(List<List<String>> elements) {
         this.elements = elements;
     }
-
+    
+    @SuppressWarnings("unchecked")
     public boolean cykParse(List<List<String>> elements, String sentence) {
+        
         int sentenceSize = sentence.length();
         List<String>[][] table = new ArrayList[sentenceSize][sentenceSize];
 
@@ -34,9 +36,11 @@ public class CYK {
                 table[i][j] = conjuntoRegras;
             }
         }
-
         return table[sentenceSize - 1][0].contains(utils.getFirstGrammarItem());
     }
+    
+    
+    
 
     private List<String> concatenaVerificaRegras(List<String> regraEsquerda, List<String> regraDireita) {
         List<String> regrasExistentes = new ArrayList<String>();

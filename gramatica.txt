@@ -4,3 +4,9 @@ E,b,L
 ----
 abc
 abbc
+ab
+ac
+ad
+bc
+bd
+cd

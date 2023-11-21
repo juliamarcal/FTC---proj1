@@ -7,6 +7,7 @@ public class Chomsky {
     static Utils utils = new Utils();
 
     public List<List<String>> ToFNC(List<List<String>> elements) {
+        long tempoInicial = System.currentTimeMillis();
         System.out.println("======= Passo a passo - Gramática de Chomsky =======\n");
         System.out.println("Gramática original: " + elements);
         List<List<String>> newElements = new ArrayList<>();
@@ -18,12 +19,16 @@ public class Chomsky {
         System.out.println("Substitui variáveis: " + newElements);
         
         newElements = doChomsky(newElements);
-        System.out.println("Alteração para forma normal: " + newElements +"\n");
+        System.out.println("Alteração para forma normal: " + newElements);
 
         if (acceptVoid(elements)) {
            newElements.get(0).add("#"); 
            System.out.println("Adiciona lambda a primeira regra se a gramatica aceita vazio: " + newElements);
         }
+        
+        long tempoFinal = System.currentTimeMillis();
+        long tempoTotal = tempoFinal - tempoInicial;
+        System.out.println("Tempo de execução: " + tempoTotal +" segundos\n");
 
         return newElements;
     }
@@ -211,7 +216,7 @@ public class Chomsky {
             newRule.add(entry.getKey());
             newElements.add(newRule);
         }
-        
+        long tempoFinal = System.currentTimeMillis();
         return newElements;
     }
 

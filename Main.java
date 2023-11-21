@@ -5,7 +5,6 @@ public class Main {
     static Chomsky chomsky = new Chomsky();
     static Form2NF form2nf = new Form2NF();
 
-
     static CYK cyk;
 
     public static void main(String[] args) {
@@ -16,17 +15,16 @@ public class Main {
         // Lê o arquivo e salva a gramatica
         elements = archive.FindGlcInArquive();
         sentences = archive.FindSentenceInArquive();
-        List<List<String>> gramatica = chomsky.ToFNC(elements); 
+        List<List<String>> gramatica = chomsky.ToFNC(elements);;
         List<List<String>> gramatica2NF = form2nf.To2NF(elements);
+        cyk = new CYK(gramatica);
+
 
         System.out.println("\n\n======= Resultados Finais =======\n");
         System.out.println("Gramática original: " + elements);
         System.out.println("Sentenças a validar: " + sentences);
         System.out.println("Gramática de Chomsky: " + gramatica);
-        System.out.println("Gramática 2FN: " + gramatica2NF);
-        
-
-        cyk = new CYK(gramatica); // Criando uma instância de CYK com as regras de Chomsky
+        System.out.println("Gramática 2FN: " + gramatica2NF); 
 
         for (String sentence : sentences) {
             boolean validation = cyk.cykParse(gramatica, sentence);
