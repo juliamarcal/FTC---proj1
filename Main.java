@@ -4,6 +4,8 @@ public class Main {
     static Archive archive = new Archive();
     static Chomsky chomsky = new Chomsky();
     static Form2NF form2nf = new Form2NF();
+    static Utils utils = new Utils();
+
 
     static CYK cyk;
 
@@ -15,6 +17,11 @@ public class Main {
         // Lê o arquivo e salva a gramatica
         elements = archive.FindGlcInArquive();
         sentences = archive.FindSentenceInArquive();
+
+        if ( !utils.isValidGrammar(elements) ) {
+            System.out.println("Erro: Gramatica invalida!");
+            return;
+        }
         List<List<String>> gramatica = chomsky.ToFNC(elements);;
         List<List<String>> gramatica2NF = form2nf.To2NF(elements);
         cyk = new CYK(gramatica);

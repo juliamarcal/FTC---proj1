@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Utils {
@@ -36,6 +37,25 @@ public class Utils {
         elements = archive.FindGlcInArquive(); 
         String firstVariable = elements.get(0).get(0);
         return firstVariable;
+    }
+
+    public boolean isValidGrammar(List<List<String>> grammar) {
+        List<String> variables = new ArrayList<>();
+        for (List<String> rule : grammar) {
+            variables.add(rule.get(0));
+        }
+        for (List<String> rule : grammar) {
+            for(int i=1; i<rule.size(); i++) {
+                String word = rule.get(i);
+                for(int j=0; j<word.length(); j++) {
+                    char letter = word.charAt(j);
+                    if ((letter >= 'A' && letter <= 'Z') && !variables.contains(String.valueOf(letter))) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 }

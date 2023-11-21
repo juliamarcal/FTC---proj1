@@ -30,6 +30,9 @@ public class Chomsky {
         long tempoTotal = tempoFinal - tempoInicial;
         System.out.println("Tempo de execução: " + tempoTotal +" segundos\n");
 
+        newElements = removeUnusedRules(newElements);
+        System.out.println("Remoção de variaveis não ultilizadas: " + newElements);
+
         return newElements;
     }
 
@@ -135,6 +138,52 @@ public class Chomsky {
             }
         }
         return 0; // rule doesnt have unitary production
+    }
+
+    public List<List<String>> removeUnusedRules(List<List<String>> elements) {
+        List<List<String>> newElements = new ArrayList<>();
+        for (List<String> innerList : elements) {
+            List<String> newInnerList = new ArrayList<>(innerList);
+            newElements.add(newInnerList);
+        }
+        List<String> calls = new ArrayList<>();
+        boolean checkAgain;
+
+        do {
+            checkAgain = false;
+            calls.clear();
+            calls.add(newElements.get(0).get(0));
+            for (List<String> rule : newElements) {
+                for(int j=1; j<rule.size(); j++) { // go trough words
+                    String word = rule.get(j);
+                    for(int k=0; k<word.length(); k++) { // go trough every letter
+                        if(word.charAt(k) == 'X') {
+                            if (!calls.contains(String.valueOf(word.charAt(k))+String.valueOf(word.charAt(k+1)))) {
+                                calls.add(String.valueOf(word.charAt(k))+String.valueOf(word.charAt(k+1))); 
+                            }
+
+                        } else if (word.charAt(k) >= 'A' && word.charAt(k) <= 'Z') {
+                            if (!calls.contains(String.valueOf(word.charAt(k)))) {
+                                calls.add(String.valueOf(word.charAt(k)));
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            for (int i=0; i<newElements.size(); i++) {
+                List<String> rule = newElements.get(i); 
+                if (!calls.contains(rule.get(0))) {
+                    newElements.remove(rule);
+                    checkAgain = true;
+                    i--;
+                }
+            }
+
+        } while (checkAgain);
+        
+        return newElements;
     }
 
     public List<List<String>> doChomsky(List<List<String>> elements) {
