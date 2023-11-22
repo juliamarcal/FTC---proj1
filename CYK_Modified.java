@@ -1,161 +1,115 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CYK_Modified {
 
-    private List<String> relacaoUnitaria;
-    private List<String> relacaoUnitariaReversa;
-    List<Regra> regras;
+   public static boolean cyk(List<List<String>> reversa, String sentence) {
 
-    public CYK_Modified() {
-        // Inicializa a lista de regras
-        this.regras = new ArrayList<>();
+        if (isPalavraAssociadaAoSimboloInicial(reversa, sentence)) {
+            return true;
+        }
+        
+        int sentenceSize = sentence.length();
+        List<String>[][] table = new ArrayList[sentenceSize][sentenceSize];
 
-        // Adiciona regras à lista
-        Regra regra1 = new Regra();
-        this.regras.add(regra1);
+        for (int j = 0; j < sentenceSize; j++) {
+            table[0][j] = keysOfValue(reversa, String.valueOf(sentence.charAt(j)));
+        }
 
-        // Inicializa as listas relacaoUnitaria e relacaoUnitariaReversa
-        this.relacaoUnitaria = new ArrayList<>();
-        this.relacaoUnitariaReversa = new ArrayList<>();
+        for (int i = 1; i < sentenceSize; i++) {
+            for (int j = 0; j < (sentenceSize - i); j++) {
+                List<String> conjuntoRegras = new ArrayList<>();
+                int rows = i, columns = j;
 
-        // Chama os métodos que dependem da lista de regras
-        relacaoUnitaria();
-        relacaoUnitariaReversa();
-    }
+                for (int k = 0; k < i; k++) {
+                    List<String> regraEsquerda = table[k][j];
+                    rows--;
+                    columns++;
+                    List<String> regraDireita = table[rows][columns];
 
-    public List<String> criarFechoUnitario(String a, List<String> relacaoUnitariaReversa) {
-        List<String> fecho = new ArrayList<String>();
-        fecho.add(a);
-        List<String> tmp = new ArrayList<String>();
-        tmp.add("" + a);
-        while (tmp.size() != 0) {
-            String var = tmp.get(0);
-            tmp.remove(0);
-            for (String s : relacaoUnitariaReversa) {
-                if ((s.charAt(1) + "").equals(var)) {
-                    if (!fecho.contains(s.charAt(3) + "")) {
-                        tmp.add(s.charAt(3) + "");
-                        fecho.add(s.charAt(3) + "");
-                    }
+                    insereCasoNaoExista(concatenaVerificaRegras(regraEsquerda, regraDireita,reversa), conjuntoRegras, reversa);
                 }
+
+                table[i][j] = conjuntoRegras;
             }
         }
-        return fecho;
+        return table[sentenceSize - 1][0].contains("L");
     }
 
-    public void relacaoUnitaria() {
-        // Implementação do método relacaoUnitaria
-        for (Regra regra : regras) {
-            for (List<String> producao : regra.getProducoes()) {
-                String simboloInicial = regra.getSimboloInicial();
-                for (int i = 0; i < producao.size(); i++) {
-                    String simbolo = producao.get(i);
-                    if (!simbolo.equals("#")) {
-                        // Crio a relação unitária e a reversa
-                        String novaRelacao = "(" + simboloInicial + "," + simbolo + ")";
-                        String novaRelacaoReversa = "(" + simbolo + "," + simboloInicial + ")";
-    
-                        if (!relacaoUnitaria.contains(novaRelacao))
-                            relacaoUnitaria.add(novaRelacao);
-                        if (!relacaoUnitariaReversa.contains(novaRelacaoReversa))
-                            relacaoUnitariaReversa.add(novaRelacaoReversa);
-                    }
-                }
+    private static boolean isPalavraAssociadaAoSimboloInicial(List<List<String>> reversa, String sentence) {
+        for (List<String> rule : reversa) {
+            if (rule.size() > 1 && rule.get(0).equals(sentence) && rule.get(1).equals("L")) {
+                return true;
             }
         }
-    
-        System.out.println("Ug: " + relacaoUnitaria);
-        System.out.println("Ûg: " + relacaoUnitariaReversa);
+        return false;
     }
-    
-    public void relacaoUnitariaReversa() {
-        // Implementação do método relacaoUnitariaReversa
-        for (Regra regra : regras) {
-            for (List<String> producao : regra.getProducoes()) {
-                String simboloInicial = regra.getSimboloInicial();
-                for (int i = 0; i < producao.size(); i++) {
-                    String simbolo = producao.get(i);
-                    if (!simbolo.equals("#")) {
-                        // Crio a relação unitária reversa
-                        String novaRelacaoReversa = "(" + simbolo + "," + simboloInicial + ")";
-                        if (!relacaoUnitariaReversa.contains(novaRelacaoReversa))
-                            relacaoUnitariaReversa.add(novaRelacaoReversa);
-                    }
-                }
+
+    private static void insereCasoNaoExista(List<String> aux, List<String> listFinal, List<List<String>> reversa) {
+        for (String key : aux) {
+            if (!listFinal.contains(key)) {
+                listFinal.add(key);
             }
         }
     }
 
-    public List<String> criarFechoUnitario(String s) {
-        String[] split = s.split(" ");
-        List<String> resposta = new ArrayList<>();
-        for (String t : split) {
-            resposta.addAll(criarFechoUnitario(t, relacaoUnitariaReversa));
-        }
-        return resposta;
-    }
+    private static List<String> concatenaVerificaRegras(List<String> regraEsquerda, List<String> regraDireita, List<List<String>> reversa) {
+        List<String> regrasExistentes = new ArrayList<>();
 
-    public String listToString(List<String> str) {
-        StringBuilder tmp = new StringBuilder();
-        for (String s : str) {
-            tmp.append(s).append(",");
-        }
-        return tmp.substring(0, tmp.length() - 1);
-    }
-
-    public void CYK(String palavra) {
-        palavra = "ac";
-        String[][] T = new String[palavra.length()][palavra.length()];
-        String[][] Tt = new String[palavra.length()][palavra.length()];
-
-        for (int i = 0; i < palavra.length(); i++) {
-            for (int j = 0; j < palavra.length(); j++) {
-                T[i][j] = "";
-                Tt[i][j] = "";
-            }
-        }
-
-        for (int i = 0; i < palavra.length(); i++) {
-            for (Regra regra : regras) {
-                for (List<String> producao : regra.getProducoes()) {
-                    if (producao.size() == 1 && producao.get(0).equals(String.valueOf(palavra.charAt(i)))) {
-                        T[i][i] = listToString(criarFechoUnitario(producao.get(0), relacaoUnitariaReversa));
-                    }
+        if (!regraEsquerda.isEmpty() && !regraDireita.isEmpty()) {
+            for (String regraEsq : regraEsquerda) {
+                for (String regraDir : regraDireita) {
+                    String regraFormada = regraEsq + regraDir;
+                    List<String> aux = keysOfValue(reversa, regraFormada);
+                    insereCasoNaoExista(aux, regrasExistentes, reversa);
                 }
             }
         }
 
-        for (int j = 1; j <= palavra.length() - 1; j++) {
-            for (int i = j - 1; i >= 0; i--) {
-                for (int h = i; h <= j - 1; h++) {
-                    for (Regra r : regras) {
-                        for (List<String> producao : r.getProducoes()) {
-                            if (producao.size() == 2) {
-                                String c1 = producao.get(0);
-                                String c2 = producao.get(1);
-                                if (T[i][h].contains(c1) && T[h + 1][j].contains(c2)) {
-                                    Tt[i][j] += r.getSimboloInicial() + " ";
-                                }
-                            }
-                        }
-                    }
-                    T[i][j] = listToString(criarFechoUnitario(Tt[i][j], relacaoUnitariaReversa));
-                }
+        return regrasExistentes;
+    }
+
+    private static List<String> keysOfValue(List<List<String>> reversa, String value) {
+        List<String> keys = new ArrayList<>();
+
+        for (List<String> rule : reversa) {
+            if (rule.contains(value)){
+                keys.add(rule.get(0));
             }
         }
 
-        for (int i = 0; i < palavra.length(); i++) {
-            for (int j = 0; j < palavra.length(); j++) {
-                System.out.print(T[i][j] + " ");
+        return keys;
+    }
+
+    public static List<List<String>> gerarRelacaoReversa(List<List<String>> gramatica) {
+        List<List<String>> reversa = new ArrayList<>();
+
+        for (List<String> regra : gramatica) {
+            String simboloOrigem = regra.get(0);
+
+            for (int i = 1; i < regra.size(); i++) {
+                adicionarRegraReversa(reversa, regra.get(i), simboloOrigem);
             }
-            System.out.println();
         }
-        System.out.println();
-        if ((T[0][palavra.length() - 1]).contains("L")) {
-            System.out.println("sim");
-        } else {
-            System.out.println("nao");
+
+        return reversa;
+    }
+
+    public static void adicionarRegraReversa(List<List<String>> reversa, String simboloDestino, String simboloOrigem) {
+        Optional<List<String>> destinoEncontrado = reversa.stream()
+                .filter(regra -> regra.get(0).equals(simboloDestino))
+                .findFirst();
+
+        // Se encontrarmos a linha, adicionamos simboloOrigem ao conjunto associado ao símboloDestino
+        destinoEncontrado.ifPresent(regra -> regra.add(simboloOrigem));
+
+        // Se não encontrarmos a linha, criamos uma nova linha para simboloDestino
+        if (!destinoEncontrado.isPresent()) {
+            List<String> novaRegra = new ArrayList<>();
+            novaRegra.add(simboloDestino);
+            novaRegra.add(simboloOrigem);
+            reversa.add(novaRegra);
         }
     }
 }

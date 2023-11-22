@@ -6,7 +6,4 @@ abc
 abbc
 ab
 ac
-ad
-bc
-bd
-cd
+b
