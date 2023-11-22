@@ -26,7 +26,6 @@ public class Main {
         List<List<String>> gramatica2NF = form2nf.To2NF(elements);
         cyk = new CYK(gramatica);
 
-
         System.out.println("\n\n======= Resultados Finais =======\n");
         System.out.println("Gramática original: " + elements);
         System.out.println("Sentenças a validar: " + sentences);
