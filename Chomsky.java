@@ -7,31 +7,26 @@ public class Chomsky {
     static Utils utils = new Utils();
 
     public List<List<String>> ToFNC(List<List<String>> elements) {
-        long tempoInicial = System.currentTimeMillis();
         System.out.println("======= Passo a passo - Gramática de Chomsky =======\n");
         System.out.println("Gramática original: " + elements);
         List<List<String>> newElements = new ArrayList<>();
 
         newElements = eliminateVoid(elements);
-        System.out.println("Elimina lambda: " + newElements);
+        System.out.println("\nElimina lambda: " + newElements);
 
         newElements = eliminateUnitaryProductions(newElements);
-        System.out.println("Substitui variáveis: " + newElements);
+        System.out.println("\nSubstitui variáveis: " + newElements);
         
         newElements = doChomsky(newElements);
-        System.out.println("Alteração para forma normal: " + newElements);
+        System.out.println("\nAlteração para forma normal: " + newElements);
 
         if (acceptVoid(elements)) {
            newElements.get(0).add("#"); 
-           System.out.println("Adiciona lambda a primeira regra se a gramatica aceita vazio: " + newElements);
+           System.out.println("\nAdiciona lambda a primeira regra se a gramatica aceita vazio: " + newElements);
         }
-        
-        long tempoFinal = System.currentTimeMillis();
-        long tempoTotal = tempoFinal - tempoInicial;
-        System.out.println("Tempo de execução: " + tempoTotal +" segundos\n");
-
         newElements = removeUnusedRules(newElements);
-        System.out.println("Remoção de variaveis não ultilizadas: " + newElements);
+        System.out.println("\nRemoção de variaveis não ultilizadas: " + newElements);
+
 
         return newElements;
     }

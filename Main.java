@@ -22,26 +22,47 @@ public class Main {
             System.out.println("Erro: Gramatica invalida!");
             return;
         }
-        List<List<String>> gramatica = chomsky.ToFNC(elements);;
-        List<List<String>> gramatica2NF = form2nf.To2NF(elements);
-        cyk = new CYK(gramatica);
-        cyk_modified = new CYK_Modified();
 
-        System.out.println("\n\n======= Resultados Finais =======\n");
+        System.out.println("\n\n======= Parametros iniciais =======\n");
         System.out.println("Gramática original: " + elements);
-        System.out.println("Sentenças a validar: " + sentences);
-        System.out.println("Gramática de Chomsky: " + gramatica);
-        System.out.println("Gramática 2FN: " + gramatica2NF); 
+        System.out.println("Sentenças a validar: " + sentences+"\n\n");
 
+        // CYK --------------------------------------------------------------
+
+        long tempoInicialCYK = System.currentTimeMillis();
+        List<List<String>> gramatica = chomsky.ToFNC(elements);
+        System.out.println("\n\nGramática de Chomsky: " + gramatica+"\n");
+
+        cyk = new CYK(gramatica);
+        System.out.println("\n\n======= Validações =======\n");
         for (String sentence : sentences) {
             boolean validation = cyk.cykParse(gramatica, sentence);
             System.out.println("Validação CYK para a sentença \"" + sentence + "\": " + validation);
         }
-        System.out.println("\n\n");
+
+        long tempoFinalCYK = System.currentTimeMillis();
+        long tempoTotalCYK = tempoFinalCYK - tempoInicialCYK;
+        System.out.println("\nTempo de execução CYK: " + tempoTotalCYK +" segundos\n");
+        
+        // CYK - Modificado -------------------------------------------------
+
+        long tempoInicialCYKMod = System.currentTimeMillis();
+        List<List<String>> gramatica2NF = form2nf.To2NF(elements);
+
+        cyk_modified = new CYK_Modified(gramatica2NF);
+        System.out.println("Gramática 2FN: " + gramatica2NF); 
+
         List<List<String>> reversa = CYK_Modified.gerarRelacaoReversa(gramatica2NF);
+        System.out.println("Ûg da gramática: " + reversa+"\n");
+
+        System.out.println("\n\n======= Validações =======\n");
         for (String sentence : sentences) {
             boolean validation_cykModified = CYK_Modified.cyk(reversa,sentence);
             System.out.println("Validação CYK Modificado para a sentença \"" + sentence + "\": " + validation_cykModified);
         }
+        
+        long tempoFinalCYKMod = System.currentTimeMillis();
+        long tempoTotalCYKMod = tempoFinalCYKMod - tempoInicialCYKMod;
+        System.out.println("\nTempo de execução CYK Modificado: " + tempoTotalCYKMod +" segundos\n");
     }
 }

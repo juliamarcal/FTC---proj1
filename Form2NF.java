@@ -7,21 +7,17 @@ public class Form2NF {
     static Chomsky chomsky = new Chomsky();
 
     public List<List<String>> To2NF(List<List<String>> elements) {
-        long tempoInicial = System.currentTimeMillis();
+
         List<List<String>> newElements = new ArrayList<>();
         
-        System.out.println("======= Passo a passo - 2FN =======\n");
+        System.out.println("\n======= Passo a passo - 2FN =======\n");
         System.out.println("Gramática original: " + elements);
 
         newElements = chomsky.eliminateVoid(elements);
-        System.out.println("Elimina lambda: " + newElements);
+        System.out.println("\nElimina lambda: " + newElements);
 
         newElements = do2NF(newElements);
-        System.out.println("Alteração para forma normal binária: " + newElements);
-
-        long tempoFinal = System.currentTimeMillis();
-        long tempoTotal = tempoFinal - tempoInicial;
-        System.out.println("Tempo de execução: " + tempoTotal +" segundos\n");
+        System.out.println("\nAlteração para forma normal binária: " + newElements);
 
         return newElements;
     }

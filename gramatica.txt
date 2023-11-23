@@ -1,7 +1,12 @@
-L,aSc,SEE
-S,SE,#
-E,b,L
+E,T,EcT
+T,F,TdF
+F,aI,bI,eEf
+I,gI,hI,#
 ----
+ag
+agcb
+cagcbf
+eagcbfda
 abc
 abbc
 ab
