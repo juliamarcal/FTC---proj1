@@ -107,17 +107,24 @@ public class Chomsky {
             for (int i=0; i<newElements.size(); i++) {
                 List<String> rule = newElements.get(i);
                 int indexUnitary = indexOfUnitaryProduction(rule);
-                
-                if (indexUnitary > 0) {
-                    if (indexOfUnitaryProduction(newElements.get(utils.getRuleIndex(rule.get(indexUnitary), newElements))) > 0) {
-                        i = utils.getRuleIndex(rule.get(indexUnitary), newElements) -1;
+
+                if (indexUnitary > 0) { // has unitary production
+                    // unitay equals variable
+                    if (rule.get(indexUnitary).equals(rule.get(0))) { 
+                        rule.remove(indexUnitary);
                         redoUnitary = true;
                     } else {
-                        List<String> ruleFromUnitary = newElements.get(utils.getRuleIndex(rule.get(indexUnitary), newElements));
-                        for (int j=1; j<ruleFromUnitary.size(); j++) {
-                            newElements.get(i).add(ruleFromUnitary.get(j));
+                        // see if the unitary has unitaries
+                        if (indexOfUnitaryProduction(newElements.get(utils.getRuleIndex(rule.get(indexUnitary), newElements))) > 0) {
+                            i = utils.getRuleIndex(rule.get(indexUnitary), newElements) -1; // go to the unitary rule
+                            redoUnitary = true; // redo from start
+                        } else {
+                            List<String> ruleFromUnitary = newElements.get(utils.getRuleIndex(rule.get(indexUnitary), newElements));
+                            for (int j=1; j<ruleFromUnitary.size(); j++) {
+                                newElements.get(i).add(ruleFromUnitary.get(j));
+                            }
+                            newElements.get(i).remove(indexUnitary);
                         }
-                        newElements.get(i).remove(indexUnitary);
                     }
                 }
             }
